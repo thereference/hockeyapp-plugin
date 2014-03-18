@@ -235,6 +235,7 @@ public class HockeyAppRecorder extends Recorder {
         ur.buildNotes = createBuildNotes(vars.expand(buildNotes), build.getChangeSet());
         ur.notesInMarkdown = notesInMarkdown;
         ur.privateBuild = privateBuild;
+        ur.releaseType = releaseType;
         ur.lists = vars.expand(lists);
         ur.notifyTeam = notifyTeam;
         ProxyConfiguration proxy = getProxy();
