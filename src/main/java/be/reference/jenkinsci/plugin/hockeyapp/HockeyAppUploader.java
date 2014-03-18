@@ -3,6 +3,7 @@ package be.reference.jenkinsci.plugin.hockeyapp;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -12,6 +13,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectHandler;
 import org.json.simple.parser.JSONParser;
 import org.apache.commons.io.IOUtils;
 
@@ -100,7 +102,22 @@ public class HockeyAppUploader implements Serializable {
 
     public Map upload(UploadRequest ur) throws IOException, org.json.simple.parser.ParseException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
-
+        
+        httpClient.setRedirectHandler(new DefaultRedirectHandler() {                
+            @Override
+            public boolean isRedirectRequested(HttpResponse response, HttpContext context) {
+                boolean isRedirect = super.isRedirectRequested(response, context);
+                if (!isRedirect) {
+                    int responseCode = response.getStatusLine().getStatusCode();
+                    if (responseCode == 301 || responseCode == 302) {
+                        return true;
+                    }
+                }
+                return isRedirect;
+            }
+        });
+        
+        
         // Configure the proxy if necessary
         if (ur.proxyHost != null && !ur.proxyHost.isEmpty() && ur.proxyPort > 0) {
             Credentials cred = null;
