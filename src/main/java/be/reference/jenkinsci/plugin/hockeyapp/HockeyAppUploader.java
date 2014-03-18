@@ -23,7 +23,7 @@ import java.util.Scanner;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * A testflight uploader
+ * A HockeyApp uploader
  */
 public class HockeyAppUploader implements Serializable {
     static interface Logger {

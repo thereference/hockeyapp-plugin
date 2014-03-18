@@ -339,7 +339,7 @@ public class HockeyAppRecorder extends Recorder {
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-            tokenPairs.replaceBy(req.bindParametersToList(HockeyAppToken.class, "tokenPair."));
+            tokenPairs.replaceBy(req.bindParametersToList(HockeyAppToken.class, "hockeyAppToken."));
             save();
             return true;
         }
