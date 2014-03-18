@@ -3,15 +3,15 @@ package be.reference.jenkinsci.plugin.hockeyapp;
 import hudson.util.Secret;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class TokenPair {
+public class HockeyAppToken {
     private String tokenPairName;
     private Secret apiToken;
 
-    public TokenPair() {
+    public HockeyAppToken() {
     }
 
     @DataBoundConstructor
-    public TokenPair(String tokenPairName, Secret apiToken) {
+    public HockeyAppToken(String tokenPairName, Secret apiToken) {
         this.tokenPairName = tokenPairName;
         this.apiToken = apiToken;
     }

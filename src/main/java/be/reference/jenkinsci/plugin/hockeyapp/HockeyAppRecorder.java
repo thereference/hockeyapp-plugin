@@ -228,7 +228,7 @@ public class HockeyAppRecorder extends Recorder {
 
     private HockeyAppUploader.UploadRequest createPartialUploadRequest(HockeyAppTeam team, EnvVars vars, AbstractBuild<?, ?> build) {
         HockeyAppUploader.UploadRequest ur = new HockeyAppUploader.UploadRequest();
-        TokenPair tokenPair = getTokenPair(team.getTokenPairName());
+        HockeyAppToken tokenPair = getTokenPair(team.getTokenPairName());
         ur.filePaths = vars.expand(StringUtils.trim(team.getFilePath()));
         ur.dsymPath = vars.expand(StringUtils.trim(team.getDsymPath()));
         ur.apiToken = vars.expand(Secret.toString(tokenPair.getApiToken()));
@@ -312,8 +312,8 @@ public class HockeyAppRecorder extends Recorder {
         return actions;
     }
 
-    private TokenPair getTokenPair(String tokenPairName) {
-        for (TokenPair tokenPair : getDescriptor().getTokenPairs()) {
+    private HockeyAppToken getTokenPair(String tokenPairName) {
+        for (HockeyAppToken tokenPair : getDescriptor().getTokenPairs()) {
             if (tokenPair.getTokenPairName().equals(tokenPairName))
                 return tokenPair;
         }
@@ -325,7 +325,7 @@ public class HockeyAppRecorder extends Recorder {
 
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-        private final CopyOnWriteList<TokenPair> tokenPairs = new CopyOnWriteList<TokenPair>();
+        private final CopyOnWriteList<HockeyAppToken> tokenPairs = new CopyOnWriteList<HockeyAppToken>();
 
         public DescriptorImpl() {
             super(HockeyAppRecorder.class);
@@ -339,7 +339,7 @@ public class HockeyAppRecorder extends Recorder {
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-            tokenPairs.replaceBy(req.bindParametersToList(TokenPair.class, "be.reference.jenkinsci.plugin.hockeyapp."));
+            tokenPairs.replaceBy(req.bindParametersToList(HockeyAppToken.class, "tokenPair."));
             save();
             return true;
         }
@@ -351,7 +351,7 @@ public class HockeyAppRecorder extends Recorder {
             return Messages.HockeyAppRecorder_UploadLinkText();
         }
 
-        public Iterable<TokenPair> getTokenPairs() {
+        public Iterable<HockeyAppToken> getTokenPairs() {
             return tokenPairs;
         }
     }
