@@ -9,8 +9,8 @@
     Creates a text field that shows the value of the "name" property.
     When submitted, it will be passed to the corresponding constructor parameter.
   -->
-  <f:entry title="Token Pair" field="tokenPairName">
-    <select class="setting-input" name="tokenPairName" description="Select TestFlight token pair. These are configured globally.">
+  <f:entry title="Token" field="tokenPairName">
+    <select class="setting-input" name="tokenPairName" description="Select HockeyApp token. These are configured globally.">
       <j:forEach var="tokenPair" items="${descriptor.tokenPairs}">
         <f:option selected="${tokenPair.tokenPairName==instance.tokenPairName}">${tokenPair.tokenPairName}</f:option>
       </j:forEach>
@@ -23,11 +23,23 @@
   <f:entry title="dSYM File (optional)" field="dsymPath">
     <f:textbox />
   </f:entry>
+  
+  <f:entry title="Release type" field="releaseType">
+    <select name="releaseType">
+    	<f:option value="2">Alpha</option>
+        <f:option selected="true" value="0">Beta</option>
+        <f:option value="1">Production</option>
+    </select>
+  </f:entry>
+  
+  <f:entry title="Private build" field="privateBuild">
+    <f:checkbox checked="checked" />
+  </f:entry>
   <f:entry title="Additional Uploads" help="/descriptor/be.reference.jenkinsci.plugin.hockeyapp.HockeyAppRecorder/help/additionalTeams">
     <f:repeatable name="additionalTeams" var="additionalTeam" items="${instance.additionalTeams}">
       <table width="100%">
         <f:entry title="Token Pair">
-          <select class="setting-input" name="tokenPairName" description="Select TestFlight token pair. These are configured globally.">
+          <select class="setting-input" name="tokenPairName" description="Select HockeyApp token. These are configured globally.">
             <j:forEach var="tokenPair" items="${descriptor.tokenPairs}">
               <f:option selected="${tokenPair.tokenPairName==additionalTeam.tokenPairName}">${tokenPair.tokenPairName}</f:option>
             </j:forEach>
@@ -50,11 +62,14 @@
   <f:entry title="Build Notes" field="buildNotes">
     <f:textarea />
   </f:entry>
+  <f:entry title="Use markdown" field="notesInMarkdown">
+    <f:checkbox />
+  </f:entry>
   <f:entry title="Append changelog to build notes" field="appendChangelog">
     <f:checkbox />
   </f:entry>
   <f:advanced>
-    <f:entry title="Distribution Lists" field="lists">
+    <f:entry title="Tags" field="lists">
         <f:textbox />
     </f:entry>
     <f:entry title="Notify Team" field="notifyTeam">

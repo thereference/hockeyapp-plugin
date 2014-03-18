@@ -34,8 +34,11 @@ public class HockeyAppUploader implements Serializable {
         String filePaths;
         String dsymPath;
         String apiToken;
+        Integer releaseType;
+        Boolean privateBuild;
         Boolean notifyTeam;
         String buildNotes;
+        Boolean notesInMarkdown;
         File file;
         File dsymFile;
         String lists;
@@ -49,12 +52,15 @@ public class HockeyAppUploader implements Serializable {
             return new ToStringBuilder(this)
                     .append("ipaPaths", filePaths)
                     .append("dsymPath", dsymPath)
+                    .append("releaseType", releaseType)
+                    .append("privateBuild", privateBuild)
                     .append("apiToken", "********")
                     .append("notifyTeam", notifyTeam)
                     .append("buildNotes", buildNotes)
+                    .append("notes_type", notesInMarkdown)
                     .append("ipa", file)
-                    .append("dsymFile", dsymFile)
-                    .append("lists", lists)
+                    .append("dsym", dsymFile)
+                    .append("tags", lists)
                     .append("proxyHost", proxyHost)
                     .append("proxyUser", proxyUser)
                     .append("proxyPass", "********")
@@ -67,9 +73,12 @@ public class HockeyAppUploader implements Serializable {
             UploadRequest r2 = new UploadRequest();
             r2.filePaths = r.filePaths;
             r2.dsymPath = r.dsymPath;
+            r2.releaseType = r.releaseType;
+            r2.privateBuild = r.privateBuild;
             r2.apiToken = r.apiToken;
             r2.notifyTeam = r.notifyTeam;
             r2.buildNotes = r.buildNotes;
+            r2.notesInMarkdown = r.notesInMarkdown;
             r2.file = r.file;
             r2.dsymFile = r.dsymFile;
             r2.lists = r.lists;
@@ -110,20 +119,23 @@ public class HockeyAppUploader implements Serializable {
         httpPost.setHeader("X-HockeyAppToken", ur.apiToken);
         
         MultipartEntity entity = new MultipartEntity();
-        //entity.addPart("api_token", new StringBody(ur.apiToken));
+
+        entity.addPart("release_type", new StringBody(ur.releaseType.toString()));        
         entity.addPart("notes", new StringBody(ur.buildNotes, "text/plain", Charset.forName("UTF-8")));
+        entity.addPart("notes_type", new StringBody(ur.notesInMarkdown ? "1" : "0"));
         entity.addPart("ipa", fileBody);
 
+        entity.addPart("private", new StringBody(ur.privateBuild ? "1" : "0"));
+        
         if (ur.dsymFile != null) {
             FileBody dsymFileBody = new FileBody(ur.dsymFile);
             entity.addPart("dsym", dsymFileBody);
         }
 
-        /*if (ur.lists.length() > 0)
-            entity.addPart("distribution_lists", new StringBody(ur.lists));*/
-        entity.addPart("notify", new StringBody(ur.notifyTeam ? "True" : "False"));
-        /*if (ur.replace)
-            entity.addPart("replace", new StringBody("True"));*/
+        if (ur.lists.length() > 0)
+            entity.addPart("tags", new StringBody(ur.lists));
+        entity.addPart("notify", new StringBody(ur.notifyTeam ? "1" : "0"));
+        
         httpPost.setEntity(entity);
 
         logDebug("POST Request: " + ur);

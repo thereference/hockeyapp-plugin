@@ -57,6 +57,8 @@ public class HockeyAppRemoteRecorder implements Callable<Object, Throwable>, Ser
             HockeyAppUploader.UploadRequest ur = HockeyAppUploader.UploadRequest.copy(uploadRequest);
             boolean isIpa = ipaOrApkFile.getName().endsWith(".ipa");
             ur.file = ipaOrApkFile;
+            
+            // TODO: HockeyApp supports Android's mapping.txt (and uses the dsym variable)
             if (isIpa) {
                 ur.dsymFile = identifyDsym(ur.dsymPath, ipaOrApkFile.toString());
             }

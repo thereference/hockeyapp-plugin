@@ -41,7 +41,25 @@ public class HockeyAppRecorder extends Recorder {
     public String getBuildNotes() {
         return this.buildNotes;
     }
+    
+    private Integer releaseType;
+    
+    public Integer getReleaseType() {
+    	return this.releaseType;
+    }
 
+    private Boolean privateBuild;
+
+    public Boolean getPrivateBuild() {
+        return this.privateBuild;
+    }
+    
+    private Boolean notesInMarkdown;
+
+    public Boolean getNotesInMarkdown() {
+        return this.notesInMarkdown;
+    }
+    
     private boolean appendChangelog;
 
     public boolean getAppendChangelog() {
@@ -91,7 +109,7 @@ public class HockeyAppRecorder extends Recorder {
     }
     
     @DataBoundConstructor
-    public HockeyAppRecorder(String tokenPairName, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, Boolean debug, HockeyAppTeam [] additionalTeams) {
+    public HockeyAppRecorder(String tokenPairName, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, Boolean debug, HockeyAppTeam [] additionalTeams, Boolean notesInMarkdown, Boolean privateBuild, Integer releaseType) {
         this.tokenPairName = tokenPairName;
         this.notifyTeam = notifyTeam;
         this.buildNotes = buildNotes;
@@ -102,6 +120,9 @@ public class HockeyAppRecorder extends Recorder {
         this.lists = lists;
         this.debug = debug;
         this.additionalTeams = additionalTeams;
+        this.notesInMarkdown = notesInMarkdown;
+        this.privateBuild = privateBuild;
+        this.releaseType = releaseType;
     }
 
     @Override
@@ -212,6 +233,8 @@ public class HockeyAppRecorder extends Recorder {
         ur.dsymPath = vars.expand(StringUtils.trim(team.getDsymPath()));
         ur.apiToken = vars.expand(Secret.toString(tokenPair.getApiToken()));
         ur.buildNotes = createBuildNotes(vars.expand(buildNotes), build.getChangeSet());
+        ur.notesInMarkdown = notesInMarkdown;
+        ur.privateBuild = privateBuild;
         ur.lists = vars.expand(lists);
         ur.notifyTeam = notifyTeam;
         ProxyConfiguration proxy = getProxy();

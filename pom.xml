@@ -8,8 +8,8 @@
 
   <groupId>be.reference.jenkins-ci.plugins</groupId>
   <artifactId>hockeyapp</artifactId>
-  <name>HockeyApp Plugin</name>
-  <description>Uploads .ipa/.apk files to www.hockeyapp.com</description>
+  <name>HockeyApp Upload Plugin</name>
+  <description>Uploads .ipa/.apk files to www.hockeyapp.net</description>
   <version>1.3.10-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
