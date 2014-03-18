@@ -129,7 +129,7 @@ public class HockeyAppUploader implements Serializable {
             httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
 
-        HttpHost targetHost = new HttpHost("rink.hockeyapp.net");
+        HttpHost targetHost = new HttpHost("rink.hockeyapp.net",443,"https");
         HttpPost httpPost = new HttpPost("/api/2/apps/upload");
         FileBody fileBody = new FileBody(ur.file);
 
