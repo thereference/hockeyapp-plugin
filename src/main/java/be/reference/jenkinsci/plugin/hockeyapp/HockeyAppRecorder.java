@@ -150,7 +150,7 @@ public class HockeyAppRecorder extends Recorder {
 
         try {
             EnvVars vars = build.getEnvironment(listener);
-
+           
             String workspace = vars.expand("$WORKSPACE");
 
             List<HockeyAppUploader.UploadRequest> urList = new ArrayList<HockeyAppUploader.UploadRequest>();
@@ -250,6 +250,7 @@ public class HockeyAppRecorder extends Recorder {
         ur.proxyPass = proxy.getPassword();
         ur.proxyPort = proxy.port;
         ur.proxyUser = proxy.getUserName();
+        ur.gitSha = vars.get("GIT_COMMIT");
         ur.debug = debug;
         ur.allowDownload = allowDownload;
         return ur;
