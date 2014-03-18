@@ -42,6 +42,12 @@ public class HockeyAppRecorder extends Recorder {
         return this.buildNotes;
     }
     
+    private Boolean allowDownload;
+    
+    public Boolean getAllowDownload() {
+    	return this.allowDownload;
+    }
+    
     private Integer releaseType;
     
     public Integer getReleaseType() {
@@ -109,7 +115,7 @@ public class HockeyAppRecorder extends Recorder {
     }
     
     @DataBoundConstructor
-    public HockeyAppRecorder(String tokenPairName, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, Boolean debug, HockeyAppTeam [] additionalTeams, Boolean notesInMarkdown, Boolean privateBuild, Integer releaseType) {
+    public HockeyAppRecorder(String tokenPairName, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, Boolean debug, HockeyAppTeam [] additionalTeams, Boolean notesInMarkdown, Boolean privateBuild, Integer releaseType, Boolean allowDownload) {
         this.tokenPairName = tokenPairName;
         this.notifyTeam = notifyTeam;
         this.buildNotes = buildNotes;
@@ -123,6 +129,7 @@ public class HockeyAppRecorder extends Recorder {
         this.notesInMarkdown = notesInMarkdown;
         this.privateBuild = privateBuild;
         this.releaseType = releaseType;
+        this.allowDownload = allowDownload;
     }
 
     @Override
@@ -244,6 +251,7 @@ public class HockeyAppRecorder extends Recorder {
         ur.proxyPort = proxy.port;
         ur.proxyUser = proxy.getUserName();
         ur.debug = debug;
+        ur.allowDownload = allowDownload;
         return ur;
     }
 

@@ -69,6 +69,9 @@
     <f:checkbox />
   </f:entry>
   <f:advanced>
+  	<f:entry title="Make available for download" field="allowDownload">
+    	<f:checkbox default="true" />
+  	</f:entry>
     <f:entry title="Tags" field="lists">
         <f:textbox />
     </f:entry>

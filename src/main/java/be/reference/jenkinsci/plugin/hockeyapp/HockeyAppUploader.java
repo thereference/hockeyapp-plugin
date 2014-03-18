@@ -37,6 +37,7 @@ public class HockeyAppUploader implements Serializable {
         String dsymPath;
         String apiToken;
         Integer releaseType;
+        Boolean allowDownload;
         Boolean privateBuild;
         Boolean notifyTeam;
         String buildNotes;
@@ -49,11 +50,13 @@ public class HockeyAppUploader implements Serializable {
         String proxyPass;
         int proxyPort;
         Boolean debug;
+        String gitSha;
 
         public String toString() {
             return new ToStringBuilder(this)
                     .append("ipaPaths", filePaths)
                     .append("dsymPath", dsymPath)
+                    .append("allowDownload", allowDownload)
                     .append("releaseType", releaseType)
                     .append("privateBuild", privateBuild)
                     .append("apiToken", "********")
@@ -68,6 +71,7 @@ public class HockeyAppUploader implements Serializable {
                     .append("proxyPass", "********")
                     .append("proxyPort", proxyPort)
                     .append("debug", debug)
+                    .append("git",gitSha)
                     .toString();
         }
 
@@ -75,6 +79,7 @@ public class HockeyAppUploader implements Serializable {
             UploadRequest r2 = new UploadRequest();
             r2.filePaths = r.filePaths;
             r2.dsymPath = r.dsymPath;
+            r2.allowDownload = r.allowDownload;
             r2.releaseType = r.releaseType;
             r2.privateBuild = r.privateBuild;
             r2.apiToken = r.apiToken;
@@ -89,6 +94,7 @@ public class HockeyAppUploader implements Serializable {
             r2.proxyPort = r.proxyPort;
             r2.proxyPass = r.proxyPass;
             r2.debug = r.debug;
+            r2.gitSha = r.gitSha;
 
             return r2;
         }
@@ -140,9 +146,14 @@ public class HockeyAppUploader implements Serializable {
         entity.addPart("release_type", new StringBody(ur.releaseType.toString()));        
         entity.addPart("notes", new StringBody(ur.buildNotes, "text/plain", Charset.forName("UTF-8")));
         entity.addPart("notes_type", new StringBody(ur.notesInMarkdown ? "1" : "0"));
+        entity.addPart("status", new StringBody(ur.allowDownload ? "2" : "1"));
         entity.addPart("ipa", fileBody);
 
         entity.addPart("private", new StringBody(ur.privateBuild ? "1" : "0"));
+        
+        if (ur.gitSha != null && ur.gitSha.length() > 0) {
+        	entity.addPart("commit_sha", new StringBody(ur.gitSha));
+        }
         
         if (ur.dsymFile != null) {
             FileBody dsymFileBody = new FileBody(ur.dsymFile);
