@@ -1,11 +1,10 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.model.*;
-import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.tasks.*;
@@ -23,7 +22,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class TestflightRecorder extends Recorder {
+
+public class HockeyAppRecorder extends Recorder {
     private String tokenPairName;
 
     public String getTokenPairName() {
@@ -124,14 +124,14 @@ public class TestflightRecorder extends Recorder {
         return this.debug;
     }
 
-    private TestflightTeam [] additionalTeams;
+    private HockeyAppTeam [] additionalTeams;
     
-    public TestflightTeam [] getAdditionalTeams() {
+    public HockeyAppTeam [] getAdditionalTeams() {
         return this.additionalTeams;
     }
     
     @DataBoundConstructor
-    public TestflightRecorder(String tokenPairName, Secret apiToken, Secret teamToken, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, String proxyHost, String proxyUser, String proxyPass, int proxyPort, Boolean debug, TestflightTeam [] additionalTeams) {
+    public HockeyAppRecorder(String tokenPairName, Secret apiToken, Secret teamToken, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, String proxyHost, String proxyUser, String proxyPass, int proxyPort, Boolean debug, HockeyAppTeam [] additionalTeams) {
         this.tokenPairName = tokenPairName;
         this.apiToken = apiToken;
         this.teamToken = teamToken;
@@ -171,11 +171,11 @@ public class TestflightRecorder extends Recorder {
 
             String workspace = vars.expand("$WORKSPACE");
 
-            List<TestflightUploader.UploadRequest> urList = new ArrayList<TestflightUploader.UploadRequest>();
+            List<HockeyAppUploader.UploadRequest> urList = new ArrayList<HockeyAppUploader.UploadRequest>();
 
-            for(TestflightTeam team : createDefaultPlusAdditionalTeams()) {
+            for(HockeyAppTeam team : createDefaultPlusAdditionalTeams()) {
                 try {
-                    TestflightUploader.UploadRequest ur = createPartialUploadRequest(team, vars, build);
+                    HockeyAppUploader.UploadRequest ur = createPartialUploadRequest(team, vars, build);
                     urList.add(ur);
                 } catch (MisconfiguredJobException mje) {
                     listener.getLogger().println(mje.getConfigurationMessage());
@@ -183,8 +183,8 @@ public class TestflightRecorder extends Recorder {
                 }
             }
 
-            for(TestflightUploader.UploadRequest ur : urList) {
-                TestflightRemoteRecorder remoteRecorder = new TestflightRemoteRecorder(workspace, ur, listener);
+            for(HockeyAppUploader.UploadRequest ur : urList) {
+                HockeyAppRemoteRecorder remoteRecorder = new HockeyAppRemoteRecorder(workspace, ur, listener);
     
                 final List<Map> parsedMaps;
     
@@ -214,10 +214,10 @@ public class TestflightRecorder extends Recorder {
         return true;
     }
 
-    private List<TestflightTeam> createDefaultPlusAdditionalTeams() {
-        List<TestflightTeam> allTeams = new ArrayList<TestflightTeam>();
+    private List<HockeyAppTeam> createDefaultPlusAdditionalTeams() {
+        List<HockeyAppTeam> allTeams = new ArrayList<HockeyAppTeam>();
         // first team is default
-        allTeams.add(new TestflightTeam(getTokenPairName(), getFilePath(), getDsymPath()));
+        allTeams.add(new HockeyAppTeam(getTokenPairName(), getFilePath(), getDsymPath()));
         if(additionalTeams != null) {
             allTeams.addAll(Arrays.asList(additionalTeams));
         }
@@ -225,7 +225,7 @@ public class TestflightRecorder extends Recorder {
     }
 
     private void addTestflightLinks(AbstractBuild<?, ?> build, BuildListener listener, Map parsedMap) {
-        TestflightBuildAction installAction = new TestflightBuildAction();
+        HockeyAppBuildAction installAction = new HockeyAppBuildAction();
         String installUrl = (String) parsedMap.get("install_url");
         installAction.displayName = Messages.TestflightRecorder_InstallLinkText();
         installAction.iconFileName = "package.gif";
@@ -233,7 +233,7 @@ public class TestflightRecorder extends Recorder {
         build.addAction(installAction);
         listener.getLogger().println(Messages.TestflightRecorder_InfoInstallLink(installUrl));
 
-        TestflightBuildAction configureAction = new TestflightBuildAction();
+        HockeyAppBuildAction configureAction = new HockeyAppBuildAction();
         String configUrl = (String) parsedMap.get("config_url");
         configureAction.displayName = Messages.TestflightRecorder_ConfigurationLinkText();
         configureAction.iconFileName = "gear2.gif";
@@ -251,8 +251,8 @@ public class TestflightRecorder extends Recorder {
         }
     }
 
-    private TestflightUploader.UploadRequest createPartialUploadRequest(TestflightTeam team, EnvVars vars, AbstractBuild<?, ?> build) {
-        TestflightUploader.UploadRequest ur = new TestflightUploader.UploadRequest();
+    private HockeyAppUploader.UploadRequest createPartialUploadRequest(HockeyAppTeam team, EnvVars vars, AbstractBuild<?, ?> build) {
+        HockeyAppUploader.UploadRequest ur = new HockeyAppUploader.UploadRequest();
         TokenPair tokenPair = getTokenPair(team.getTokenPairName());
         ur.filePaths = vars.expand(StringUtils.trim(team.getFilePath()));
         ur.dsymPath = vars.expand(StringUtils.trim(team.getDsymPath()));
@@ -312,7 +312,7 @@ public class TestflightRecorder extends Recorder {
 
     @Override
     public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
-        ArrayList<TestflightBuildAction> actions = new ArrayList<TestflightBuildAction>();
+        ArrayList<HockeyAppBuildAction> actions = new ArrayList<HockeyAppBuildAction>();
         RunList<? extends AbstractBuild<?, ?>> builds = project.getBuilds();
 
         Collection predicated = CollectionUtils.select(builds, new Predicate() {
@@ -328,10 +328,10 @@ public class TestflightRecorder extends Recorder {
 
         Collections.reverse(filteredList);
         for (AbstractBuild<?, ?> build : filteredList) {
-            List<TestflightBuildAction> testflightActions = build.getActions(TestflightBuildAction.class);
+            List<HockeyAppBuildAction> testflightActions = build.getActions(HockeyAppBuildAction.class);
             if (testflightActions != null && testflightActions.size() > 0) {
-                for (TestflightBuildAction action : testflightActions) {
-                    actions.add(new TestflightBuildAction(action));
+                for (HockeyAppBuildAction action : testflightActions) {
+                    actions.add(new HockeyAppBuildAction(action));
                 }
                 break;
             }
@@ -358,7 +358,7 @@ public class TestflightRecorder extends Recorder {
         private final CopyOnWriteList<TokenPair> tokenPairs = new CopyOnWriteList<TokenPair>();
 
         public DescriptorImpl() {
-            super(TestflightRecorder.class);
+            super(HockeyAppRecorder.class);
             load();
         }
 

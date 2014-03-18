@@ -1,15 +1,15 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class TestflightTeam {
+public class HockeyAppTeam {
 
     private String tokenPairName;
     private String filePath;
     private String dsymPath;
 
     @DataBoundConstructor
-    public TestflightTeam(String tokenPairName, String filePath, String dsymPath) {
+    public HockeyAppTeam(String tokenPairName, String filePath, String dsymPath) {
         super();
         this.tokenPairName = tokenPairName;
         this.filePath = filePath;

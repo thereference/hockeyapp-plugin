@@ -1,4 +1,4 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * A testflight uploader
  */
-public class TestflightUploader implements Serializable {
+public class HockeyAppUploader implements Serializable {
     static interface Logger {
         void logDebug(String message);
     }

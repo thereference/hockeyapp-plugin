@@ -1,4 +1,4 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import hudson.util.Secret;
 import org.kohsuke.stapler.DataBoundConstructor;

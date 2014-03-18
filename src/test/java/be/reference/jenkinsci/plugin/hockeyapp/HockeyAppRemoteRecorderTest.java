@@ -1,4 +1,4 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import hudson.model.BuildListener;
 
@@ -19,8 +19,11 @@ import static org.mockito.Mockito.*;
 import org.mockito.*;
 import org.hamcrest.Description;
 
+import be.reference.jenkinsci.plugin.hockeyapp.HockeyAppRemoteRecorder;
+import be.reference.jenkinsci.plugin.hockeyapp.HockeyAppUploader;
 
-public class TestflightRemoteRecorderTest {
+
+public class HockeyAppRemoteRecorderTest {
     static File tmpDir;
     static File ipa1;
     static File dSYM1;
@@ -28,7 +31,7 @@ public class TestflightRemoteRecorderTest {
     static File dSYM2;
     static File ipa3;
     static File apk1;
-    TestflightUploader uploader;
+    HockeyAppUploader uploader;
     BuildListener listener;
 
     @BeforeClass
@@ -54,7 +57,7 @@ public class TestflightRemoteRecorderTest {
     @Before
     public void setUpMocks() {
         listener = mock(BuildListener.class);
-        uploader = mock(TestflightUploader.class);
+        uploader = mock(HockeyAppUploader.class);
 
         PrintStream mockLogger = mock(PrintStream.class);
         when(listener.getLogger()).thenReturn(mockLogger);
@@ -62,14 +65,14 @@ public class TestflightRemoteRecorderTest {
 
     @Test
     public void testPrettySpeed() {
-        assertEquals("NaN bps", TestflightRemoteRecorder.prettySpeed(Float.NaN));
+        assertEquals("NaN bps", HockeyAppRemoteRecorder.prettySpeed(Float.NaN));
     }
 
     @Test
     public void findMultipleFiles() throws Throwable {
-        TestflightUploader.UploadRequest ur = createTestUploadRequest(null);
+        HockeyAppUploader.UploadRequest ur = createTestUploadRequest(null);
 
-        TestflightRemoteRecorder remoteRecorder = new TestflightRemoteRecorder(tmpDir.toString(), ur, listener);
+        HockeyAppRemoteRecorder remoteRecorder = new HockeyAppRemoteRecorder(tmpDir.toString(), ur, listener);
 
         remoteRecorder.uploadWith(uploader);
 
@@ -83,9 +86,9 @@ public class TestflightRemoteRecorderTest {
 
     @Test
     public void findFilesWithAbsolutePaths() throws Throwable {
-        TestflightUploader.UploadRequest ur = createTestUploadRequest(apk1.getPath());
+        HockeyAppUploader.UploadRequest ur = createTestUploadRequest(apk1.getPath());
 
-        TestflightRemoteRecorder remoteRecorder = new TestflightRemoteRecorder(tmpDir.toString(), ur, listener);
+        HockeyAppRemoteRecorder remoteRecorder = new HockeyAppRemoteRecorder(tmpDir.toString(), ur, listener);
 
         remoteRecorder.uploadWith(uploader);
 
@@ -96,9 +99,9 @@ public class TestflightRemoteRecorderTest {
 
     @Test
     public void findFilesWithRelativePaths() throws Throwable {
-        TestflightUploader.UploadRequest ur = createTestUploadRequest("a/d/test.apk");
+        HockeyAppUploader.UploadRequest ur = createTestUploadRequest("a/d/test.apk");
 
-        TestflightRemoteRecorder remoteRecorder = new TestflightRemoteRecorder(tmpDir.toString(), ur, listener);
+        HockeyAppRemoteRecorder remoteRecorder = new HockeyAppRemoteRecorder(tmpDir.toString(), ur, listener);
 
         remoteRecorder.uploadWith(uploader);
 
@@ -107,7 +110,7 @@ public class TestflightRemoteRecorderTest {
         verifyNoMoreInteractions(uploader);
     }
 
-    static class IsUploadRequestForRightFiles extends ArgumentMatcher<TestflightUploader.UploadRequest> {
+    static class IsUploadRequestForRightFiles extends ArgumentMatcher<HockeyAppUploader.UploadRequest> {
         File file;
         File dsymFile;
 
@@ -123,7 +126,7 @@ public class TestflightRemoteRecorderTest {
         }
 
         public boolean matches(Object request) {
-            TestflightUploader.UploadRequest r = (TestflightUploader.UploadRequest) request;
+            HockeyAppUploader.UploadRequest r = (HockeyAppUploader.UploadRequest) request;
             return objectEquals(r.file, file) && objectEquals(r.dsymFile, dsymFile);
         }
 
@@ -137,8 +140,8 @@ public class TestflightRemoteRecorderTest {
     }
 
 
-    private TestflightUploader.UploadRequest createTestUploadRequest(String paths) {
-        TestflightUploader.UploadRequest r = new TestflightUploader.UploadRequest();
+    private HockeyAppUploader.UploadRequest createTestUploadRequest(String paths) {
+        HockeyAppUploader.UploadRequest r = new HockeyAppUploader.UploadRequest();
         r.filePaths = paths;
         return r;
     }

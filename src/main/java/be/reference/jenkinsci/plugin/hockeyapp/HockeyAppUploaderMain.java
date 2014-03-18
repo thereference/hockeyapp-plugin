@@ -1,8 +1,8 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import java.io.File;
 
-public class TestflightUploaderMain {
+public class HockeyAppUploaderMain {
     /**
      * Useful for testing
      */
@@ -16,14 +16,14 @@ public class TestflightUploaderMain {
     }
 
     private static void upload(String[] args) throws Exception {
-        TestflightUploader uploader = new TestflightUploader();
-        uploader.setLogger(new TestflightUploader.Logger() {
+        HockeyAppUploader uploader = new HockeyAppUploader();
+        uploader.setLogger(new HockeyAppUploader.Logger() {
             public void logDebug(String message) {
                 System.out.println(message);
             }
         });
 
-        TestflightUploader.UploadRequest r = new TestflightUploader.UploadRequest();
+        HockeyAppUploader.UploadRequest r = new HockeyAppUploader.UploadRequest();
         r.apiToken = args[0];
         r.teamToken = args[1];
         r.buildNotes = args[2];

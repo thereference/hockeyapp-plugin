@@ -1,4 +1,4 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import org.jvnet.localizer.Localizable;
 

@@ -1,17 +1,17 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import hudson.model.Action;
 import hudson.model.ProminentProjectAction;
 
-public class TestflightBuildAction implements ProminentProjectAction {
+public class HockeyAppBuildAction implements ProminentProjectAction {
     public String iconFileName;
     public String displayName;
     public String urlName;
 
-    public TestflightBuildAction() {
+    public HockeyAppBuildAction() {
     }
 
-    public TestflightBuildAction(Action action) {
+    public HockeyAppBuildAction(Action action) {
         iconFileName = action.getIconFileName();
         displayName = action.getDisplayName();
         urlName = action.getUrlName();

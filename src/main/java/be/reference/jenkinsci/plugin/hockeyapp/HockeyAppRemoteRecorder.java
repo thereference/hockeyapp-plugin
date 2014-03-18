@@ -1,4 +1,4 @@
-package testflight;
+package be.reference.jenkinsci.plugin.hockeyapp;
 
 import hudson.model.BuildListener;
 import hudson.remoting.Callable;
@@ -18,26 +18,27 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.commons.io.FilenameUtils;
 
+
 /**
  * Code for sending a build to TestFlight which can run on a master or slave.
  * <p/>
  * When the ipa/apk file or optional dsym file are not specified, this class first tries to resolve their paths, searching them inside the workspace.
  */
-public class TestflightRemoteRecorder implements Callable<Object, Throwable>, Serializable {
+public class HockeyAppRemoteRecorder implements Callable<Object, Throwable>, Serializable {
     final private String remoteWorkspace;
-    final private TestflightUploader.UploadRequest uploadRequest;
+    final private HockeyAppUploader.UploadRequest uploadRequest;
     final private BuildListener listener;
 
-    public TestflightRemoteRecorder(String remoteWorkspace, TestflightUploader.UploadRequest uploadRequest, BuildListener listener) {
+    public HockeyAppRemoteRecorder(String remoteWorkspace, HockeyAppUploader.UploadRequest uploadRequest, BuildListener listener) {
         this.remoteWorkspace = remoteWorkspace;
         this.uploadRequest = uploadRequest;
         this.listener = listener;
     }
 
     public Object call() throws Throwable {
-        TestflightUploader uploader = new TestflightUploader();
+        HockeyAppUploader uploader = new HockeyAppUploader();
         if (uploadRequest.debug != null && uploadRequest.debug) {
-            uploader.setLogger(new TestflightUploader.Logger() {
+            uploader.setLogger(new HockeyAppUploader.Logger() {
                 public void logDebug(String message) {
                     listener.getLogger().println(message);
                 }
@@ -46,14 +47,14 @@ public class TestflightRemoteRecorder implements Callable<Object, Throwable>, Se
         return uploadWith(uploader);
     }
 
-    List<Map> uploadWith(TestflightUploader uploader) throws Throwable {
+    List<Map> uploadWith(HockeyAppUploader uploader) throws Throwable {
         List<Map> results = new ArrayList<Map>();
 
         Collection<File> ipaOrApkFiles = findIpaOrApkFiles(uploadRequest.filePaths);
         for (File ipaOrApkFile : ipaOrApkFiles) {
             HashMap result = new HashMap();
 
-            TestflightUploader.UploadRequest ur = TestflightUploader.UploadRequest.copy(uploadRequest);
+            HockeyAppUploader.UploadRequest ur = HockeyAppUploader.UploadRequest.copy(uploadRequest);
             boolean isIpa = ipaOrApkFile.getName().endsWith(".ipa");
             ur.file = ipaOrApkFile;
             if (isIpa) {
@@ -79,7 +80,7 @@ public class TestflightRemoteRecorder implements Callable<Object, Throwable>, Se
     }
 
     // return the speed in bits per second
-    private float computeSpeed(TestflightUploader.UploadRequest request, long uploadTimeMillis) {
+    private float computeSpeed(HockeyAppUploader.UploadRequest request, long uploadTimeMillis) {
         if (uploadTimeMillis == 0) {
             return Float.NaN;
         }
