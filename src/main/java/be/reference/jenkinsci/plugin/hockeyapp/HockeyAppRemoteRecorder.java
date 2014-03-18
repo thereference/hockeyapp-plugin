@@ -71,7 +71,7 @@ public class HockeyAppRemoteRecorder implements Callable<Object, Throwable>, Ser
             long time = System.currentTimeMillis() - startTime;
 
             float speed = computeSpeed(ur, time);
-            listener.getLogger().println(Messages.TestflightRemoteRecorder_UploadSpeed(prettySpeed(speed)));
+            listener.getLogger().println(Messages.HockeyAppRecorder_UploadSpeed(prettySpeed(speed)));
 
             results.add(result);
         }

@@ -25,13 +25,11 @@ public class HockeyAppUploaderMain {
 
         HockeyAppUploader.UploadRequest r = new HockeyAppUploader.UploadRequest();
         r.apiToken = args[0];
-        r.teamToken = args[1];
-        r.buildNotes = args[2];
-        File file = new File(args[3]);
+        r.buildNotes = args[1];
+        File file = new File(args[2]);
         r.file = file;
         r.dsymFile = null;
         r.notifyTeam = true;
-        r.replace = false;
         r.lists = args[4];
 
         uploader.upload(r);

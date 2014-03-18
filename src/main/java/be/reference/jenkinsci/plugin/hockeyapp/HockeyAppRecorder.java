@@ -29,21 +29,7 @@ public class HockeyAppRecorder extends Recorder {
     public String getTokenPairName() {
         return this.tokenPairName;
     }
-
-    private Secret apiToken;
-
-    @Deprecated
-    public Secret getApiToken() {
-        return this.apiToken;
-    }
-
-    private Secret teamToken;
-
-    @Deprecated
-    public Secret getTeamToken() {
-        return this.teamToken;
-    }
-
+    
     private Boolean notifyTeam;
 
     public Boolean getNotifyTeam() {
@@ -90,33 +76,7 @@ public class HockeyAppRecorder extends Recorder {
         return this.replace;
     }
 
-    private String proxyHost;
 
-    @Deprecated
-    public String getProxyHost() {
-        return proxyHost;
-    }
-
-    private String proxyUser;
-
-    @Deprecated
-    public String getProxyUser() {
-        return proxyUser;
-    }
-
-    private String proxyPass;
-
-    @Deprecated
-    public String getProxyPass() {
-        return proxyPass;
-    }
-
-    private int proxyPort;
-
-    @Deprecated
-    public int getProxyPort() {
-        return proxyPort;
-    }
 
     private Boolean debug;
 
@@ -131,10 +91,8 @@ public class HockeyAppRecorder extends Recorder {
     }
     
     @DataBoundConstructor
-    public HockeyAppRecorder(String tokenPairName, Secret apiToken, Secret teamToken, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, String proxyHost, String proxyUser, String proxyPass, int proxyPort, Boolean debug, HockeyAppTeam [] additionalTeams) {
+    public HockeyAppRecorder(String tokenPairName, Boolean notifyTeam, String buildNotes, Boolean appendChangelog, String filePath, String dsymPath, String lists, Boolean replace, Boolean debug, HockeyAppTeam [] additionalTeams) {
         this.tokenPairName = tokenPairName;
-        this.apiToken = apiToken;
-        this.teamToken = teamToken;
         this.notifyTeam = notifyTeam;
         this.buildNotes = buildNotes;
         this.appendChangelog = appendChangelog;
@@ -142,10 +100,6 @@ public class HockeyAppRecorder extends Recorder {
         this.dsymPath = dsymPath;
         this.replace = replace;
         this.lists = lists;
-        this.proxyHost = proxyHost;
-        this.proxyUser = proxyUser;
-        this.proxyPass = proxyPass;
-        this.proxyPort = proxyPort;
         this.debug = debug;
         this.additionalTeams = additionalTeams;
     }
@@ -164,7 +118,7 @@ public class HockeyAppRecorder extends Recorder {
         if (build.getResult().isWorseOrEqualTo(Result.FAILURE))
             return false;
 
-        listener.getLogger().println(Messages.TestflightRecorder_InfoUploading());
+        listener.getLogger().println(Messages.HockeyAppRecorder_InfoUploading());
 
         try {
             EnvVars vars = build.getEnvironment(listener);
@@ -192,13 +146,13 @@ public class HockeyAppRecorder extends Recorder {
                     Object result = launcher.getChannel().call(remoteRecorder);
                     parsedMaps = (List<Map>) result;
                 } catch (UploadException ue) {
-                    listener.getLogger().println(Messages.TestflightRecorder_IncorrectResponseCode(ue.getStatusCode()));
+                    listener.getLogger().println(Messages.HockeyAppRecorder_IncorrectResponseCode(ue.getStatusCode()));
                     listener.getLogger().println(ue.getResponseBody());
                     return false;
                 }
     
                 if (parsedMaps.size() == 0) {
-                    listener.getLogger().println(Messages.TestflightRecorder_NoUploadedFile(ur.filePaths));
+                    listener.getLogger().println(Messages.HockeyAppRecorder_NoUploadedFile(ur.filePaths));
                     return false;
                 }
                 for (Map parsedMap: parsedMaps) {
@@ -226,28 +180,28 @@ public class HockeyAppRecorder extends Recorder {
 
     private void addTestflightLinks(AbstractBuild<?, ?> build, BuildListener listener, Map parsedMap) {
         HockeyAppBuildAction installAction = new HockeyAppBuildAction();
-        String installUrl = (String) parsedMap.get("install_url");
-        installAction.displayName = Messages.TestflightRecorder_InstallLinkText();
+        String installUrl = (String) parsedMap.get("public_url");
+        installAction.displayName = Messages.HockeyAppRecorder_InstallLinkText();
         installAction.iconFileName = "package.gif";
         installAction.urlName = installUrl;
         build.addAction(installAction);
-        listener.getLogger().println(Messages.TestflightRecorder_InfoInstallLink(installUrl));
+        listener.getLogger().println(Messages.HockeyAppRecorder_InfoInstallLink(installUrl));
 
         HockeyAppBuildAction configureAction = new HockeyAppBuildAction();
         String configUrl = (String) parsedMap.get("config_url");
-        configureAction.displayName = Messages.TestflightRecorder_ConfigurationLinkText();
+        configureAction.displayName = Messages.HockeyAppRecorder_ConfigurationLinkText();
         configureAction.iconFileName = "gear2.gif";
         configureAction.urlName = configUrl;
         build.addAction(configureAction);
-        listener.getLogger().println(Messages.TestflightRecorder_InfoConfigurationLink(configUrl));
+        listener.getLogger().println(Messages.HockeyAppRecorder_InfoConfigurationLink(configUrl));
 
         build.addAction(new EnvAction());
 
         // Add info about the selected build into the environment
         EnvAction envData = build.getAction(EnvAction.class);
         if (envData != null) {
-            envData.add("TESTFLIGHT_INSTALL_URL", installUrl);
-            envData.add("TESTFLIGHT_CONFIG_URL", configUrl);
+            envData.add("HOCKEYAPP_INSTALL_URL", installUrl);
+            envData.add("HOCKEYAPP_CONFIG_URL", configUrl);
         }
     }
 
@@ -265,8 +219,6 @@ public class HockeyAppRecorder extends Recorder {
         ur.proxyPass = proxy.getPassword();
         ur.proxyPort = proxy.port;
         ur.proxyUser = proxy.getUserName();
-        ur.replace = replace;
-        ur.teamToken = vars.expand(Secret.toString(tokenPair.getTeamToken()));
         ur.debug = debug;
         return ur;
     }
@@ -275,9 +227,6 @@ public class HockeyAppRecorder extends Recorder {
         ProxyConfiguration proxy;
         if (Hudson.getInstance() != null && Hudson.getInstance().proxy != null) {
             proxy = Hudson.getInstance().proxy;
-        } else if (proxyHost != null && proxyPort > 0) {
-            // backward compatibility for pre-1.3.7 configurations
-            proxy = new ProxyConfiguration(proxyHost, proxyPort, proxyUser, proxyPass);
         } else {
             proxy = new ProxyConfiguration("", 0, "", "");
         }
@@ -294,7 +243,7 @@ public class HockeyAppRecorder extends Recorder {
 
             // Then append the changelog
             stringBuilder.append("\n\n")
-                    .append(changeSet.isEmptySet() ? Messages.TestflightRecorder_EmptyChangeSet() : Messages.TestflightRecorder_Changelog())
+                    .append(changeSet.isEmptySet() ? Messages.HockeyAppRecorder_EmptyChangeSet() : Messages.HockeyAppRecorder_Changelog())
                     .append("\n");
 
             int entryNumber = 1;
@@ -346,11 +295,9 @@ public class HockeyAppRecorder extends Recorder {
                 return tokenPair;
         }
 
-        if (getApiToken() != null && getTeamToken() != null)
-            return new TokenPair("", getApiToken(), getTeamToken());
 
         String tokenPairNameForMessage = tokenPairName != null ? tokenPairName : "(null)";
-        throw new MisconfiguredJobException(Messages._TestflightRecorder_TokenPairNotFound(tokenPairNameForMessage));
+        throw new MisconfiguredJobException(Messages._HockeyAppRecorder_TokenPairNotFound(tokenPairNameForMessage));
     }
 
     @Extension // This indicates to Jenkins that this is an implementation of an extension point.
@@ -378,7 +325,7 @@ public class HockeyAppRecorder extends Recorder {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return Messages.TestflightRecorder_UploadLinkText();
+            return Messages.HockeyAppRecorder_UploadLinkText();
         }
 
         public Iterable<TokenPair> getTokenPairs() {
