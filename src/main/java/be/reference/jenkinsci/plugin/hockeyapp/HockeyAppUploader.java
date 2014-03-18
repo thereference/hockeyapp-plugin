@@ -164,7 +164,7 @@ public class HockeyAppUploader implements Serializable {
 
         // Improved error handling.
         int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200) {
+        if (statusCode != 200 || statusCode != 201) {
             String responseBody = new Scanner(is).useDelimiter("\\A").next();
             throw new UploadException(statusCode, responseBody, response);
         }
