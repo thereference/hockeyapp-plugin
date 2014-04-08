@@ -26,9 +26,9 @@
   
   <f:entry title="Release type" field="releaseType">
     <select name="releaseType">
-    	<f:option value="2">Alpha</f:option>
-        <f:option value="0">Beta</f:option>
-        <f:option value="1">Production</f:option>
+    	<f:option selected="${instance.releaseType == 2}" value="2">Alpha</f:option>
+        <f:option selected="${instance.releaseType == 0}" value="0">Beta</f:option>
+        <f:option selected="${instance.releaseType == 1}" value="1">Production</f:option>
     </select>
   </f:entry>
   
